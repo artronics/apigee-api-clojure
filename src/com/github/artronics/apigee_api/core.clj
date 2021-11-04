@@ -3,10 +3,13 @@
             [clojure.data.json :as json]))
 
 (defrecord Apigee [org developer-email app-name product-name])
+(defrecord Config [org token base-url])
 
-(defrecord ApigeeApp [name])
-
-(defn base-url [org-name] (str "https://api.enterprise.apigee.com/v1/organizations/" org-name))
+(defn api-path
+  ([{:keys [base-url org-name]} & path-segments]
+   (let [base (if base-url (str base-url "/organizations") "https://api.enterprise.apigee.com/v1/organizations")
+         all (concat [base org-name] path-segments)]
+     (clojure.string/join "/" all))))
 
 (defn get-body
   [res]
@@ -18,11 +21,11 @@
 
 (defn app-url
   [{:keys [org developer-email app-name]}]
-  (str (base-url org) "/developers/" developer-email "/apps/" app-name))
+  (str (api-path org) "/developers/" developer-email "/apps/" app-name))
 
 (defn product-url
   [{:keys [org product-name]}]
-  (str (base-url org) "/" "apiproducts/" product-name))
+  (str (api-path org) "/" "apiproducts/" product-name))
 
 (defn auth-header
   [token]
@@ -45,7 +48,6 @@
    ^ApigeeApp app]
   (let [url (app-url (dissoc apigee :app-name))
         params {:org_name org :developer_email developer-email}]
-    (println (make-body app))
     (get-body (client/post url {:params params
                                 :headers (auth-header token)
                                 :content-type :json

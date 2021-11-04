@@ -3,7 +3,7 @@
   :url "https://github.com/artronics/apigee-api-clojure.git"
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.11.0-alpha2"]
                  [clj-http "3.12.3"]
                  [org.clojure/data.json "2.4.0"]
                  ]
